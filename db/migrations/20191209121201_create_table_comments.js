@@ -1,6 +1,6 @@
 exports.up = function(knex) {
   return knex.schema.createTable("comments", function(table) {
-    table.increments("comment_id");
+    table.increments("comment_id").primary();
     table.string("username");
     table.integer("article_id");
     table.integer("votes");
@@ -9,4 +9,6 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {};
+exports.down = function(knex) {
+  return knex.schema.dropTable("comments");
+};

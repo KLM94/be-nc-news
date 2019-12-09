@@ -23,6 +23,10 @@ This utility function should be able to take an array (`list`) of objects and re
 will become
 
 `{ A: 1 }`
+const obj = {}
+array.forEach(element => {
+obj[element.title] = element.article_id
+}
 
 ---
 

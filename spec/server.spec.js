@@ -17,23 +17,15 @@ describe("/api", () => {
           expect(response.body.topics[0]).to.have.keys(["slug", "description"]);
         });
     });
-    it("GET:400 responds with an error message when no information is found", () => {
-      return request(server)
-        .get("/topics")
-        .expect(404) // <<<<<< Look for a better error message and handle it.
-        .then(response => {
-          expect(response.body.msg).to.equal("Bad request");
-        });
-    });
   });
-  describe("/users/butter_bridge", () => {
+  describe("/users/:username", () => {
     it("GET: 200 gives back correct information when username is passed", () => {
       return request(server)
         .get("/api/users/butter_bridge")
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.users).to.eql([
+          expect(response.body.user).to.eql([
             {
               username: "butter_bridge",
               name: "jonny",
@@ -41,11 +33,30 @@ describe("/api", () => {
                 "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
             }
           ]);
-          expect(response.body.users[0]).to.have.keys([
+          expect(response.body.user[0]).to.have.keys([
             "username",
             "name",
             "avatar_url"
           ]);
+        });
+    });
+  });
+  it("GET:404 responds with an error message when given an invalid username", () => {
+    return request(server)
+      .get("/api/users/not-an-id")
+      .expect(404)
+      .then(response => {
+        expect(response.body.msg).to.equal("Username does not exist");
+      });
+  });
+  describe.only("/articles/:article_id", () => {
+    it("GET: 200 sends back article information", () => {
+      return request(server)
+        .get("/api/articles/1")
+        .expect(200)
+        .then(response => {
+          // console.log(response.body);
+          expect(response.body).to.be.an("object");
         });
     });
   });

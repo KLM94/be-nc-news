@@ -12,7 +12,8 @@
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
     "server-test": "mocha spec/server.spec.js",
-    "dev": "nodemon listen.js"
+    "dev": "nodemon listen.js",
+    "query": "psql -f ./testing./query.sql > query-output.txt"
   },
   "repository": {
     "type": "git",

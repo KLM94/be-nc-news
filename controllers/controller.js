@@ -1,7 +1,9 @@
 const {
   fetchTopics,
   fetchUsersByUsername,
-  fetchArticleById
+  fetchArticleById,
+  updateArticleById,
+  addCommentToArticle
 } = require("../models/model");
 
 const getTopics = (req, res, next) => {
@@ -18,23 +20,43 @@ const getUserByUsername = (req, res, next) => {
     .then(function(user) {
       res.status(200).send(user);
     })
-    .catch(function(err) {
-      next(err);
-    });
+    .catch(next);
 };
 
 const getArticleById = (req, res, next) => {
-  console.log("Reached the controller");
   const { article_id } = req.params;
-
   fetchArticleById(article_id)
     .then(function(article) {
       res.status(200).send(article);
     })
-    .catch(function(err) {
-      console.log(err);
-      next(err);
-    });
+    .catch(next);
 };
 
-module.exports = { getTopics, getUserByUsername, getArticleById };
+const patchArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  updateArticleById(article_id, inc_votes)
+    .then(function(article) {
+      res.status(200).send(article);
+    })
+    .catch(next);
+};
+
+const postCommentToArticle = (req, res, next) => {
+  console.log("IN THE CONTROLLER");
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  addCommentToArticle(article_id, username, body)
+    .then(function(comment) {
+      res.status(201).send(comment);
+    })
+    .catch(next);
+};
+
+module.exports = {
+  getTopics,
+  getUserByUsername,
+  getArticleById,
+  patchArticleById,
+  postCommentToArticle
+};

@@ -21,7 +21,7 @@ server.use((err, req, res, next) => {
 
 server.use((err, req, res, next) => {
   console.log("IN THE SERVER");
-  //console.log(err);
+  console.log(err);
 
   //if (err.status === 404) res.status(404).send({ msg: "Resource not found." });
   if (err) res.status(500).send({ msg: "Internal Server Error" });

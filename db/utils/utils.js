@@ -19,12 +19,13 @@ exports.makeRefObj = list => {
 exports.formatComments = (comments, articleRef) => {
   let coppiedComments = [];
   comments.forEach(comment => {
+    const commentCopy = { ...comment };
     coppiedComments.push({
-      body: comment.body,
-      article_id: articleRef[comment.belongs_to],
-      author: comment.created_by,
-      votes: comment.votes,
-      created_at: new Date(comment.created_at)
+      body: commentCopy.body,
+      article_id: articleRef[commentCopy.belongs_to],
+      author: commentCopy.created_by,
+      votes: commentCopy.votes,
+      created_at: new Date(commentCopy.created_at)
     });
   });
   return coppiedComments;

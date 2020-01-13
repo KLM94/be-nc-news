@@ -5,7 +5,7 @@ exports.fetchTopics = () => {
     .select("*")
     .from("topics")
     .then(allTopics => {
-      console.log(allTopics);
+      //console.log(allTopics);
       return { topics: allTopics };
     });
 };
@@ -51,6 +51,7 @@ exports.updateArticleById = (article_id, inc_votes) => {
     .increment("votes", inc_votes)
     .returning("*")
     .then(article => {
+      // console.log(article);
       return { article: article };
     });
 };

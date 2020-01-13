@@ -9,6 +9,7 @@ const {
 const getTopics = (req, res, next) => {
   fetchTopics()
     .then(function(topics) {
+      //console.log(topics);
       res.status(200).send(topics);
     })
     .catch(next);
@@ -18,6 +19,7 @@ const getUserByUsername = (req, res, next) => {
   const { username } = req.params;
   fetchUsersByUsername(username)
     .then(function(user) {
+      //console.log(user);
       res.status(200).send(user);
     })
     .catch(next);
@@ -48,6 +50,7 @@ const postCommentToArticle = (req, res, next) => {
   const { username, body } = req.body;
   addCommentToArticle(article_id, username, body)
     .then(function(comment) {
+      console.log(username, body);
       res.status(201).send(comment);
     })
     .catch(next);

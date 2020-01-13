@@ -20,11 +20,14 @@ server.use((err, req, res, next) => {
 });
 
 server.use((err, req, res, next) => {
-  console.log("IN THE SERVER");
-  console.log(err);
+  //console.log(err);
+  const psqlCodes = ["22P02"]; //ref object
 
-  //if (err.status === 404) res.status(404).send({ msg: "Resource not found." });
-  if (err) res.status(500).send({ msg: "Internal Server Error" });
+  if (psqlCodes[0] === "22P02") {
+    res.status(400).send({ msg: "Invalid ID" });
+  } else {
+    res.status(500).send({ msg: "Internal Server Error" });
+  }
 });
 
 module.exports = server;

@@ -8,7 +8,7 @@ const {
 const { formatDates, formatComments, makeRefObj } = require("../utils/utils");
 
 exports.seed = function(knex) {
-  console.log("seeeding...");
+  //console.log("seeeding...");
   // const topicsInsertions = knex("topics").insert(topicData);
   // const usersInsertions = knex("users").insert(userData);
   return knex.migrate

@@ -9,7 +9,7 @@ const handleCustomErrors = (err, req, res, next) => {
 };
 
 const handlePsqlErrors = (err, req, res, next) => {
-  //console.log(err);
+  console.log(err);
   if (err.code) {
     const errorCodes = {
       "22P02": [400, "Incorrect Data-type"],

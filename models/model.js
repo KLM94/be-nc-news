@@ -5,7 +5,6 @@ exports.fetchTopics = () => {
     .select("*")
     .from("topics")
     .then(allTopics => {
-      //console.log(allTopics);
       return { topics: allTopics };
     });
 };
@@ -51,7 +50,6 @@ exports.updateArticleById = (article_id, inc_votes) => {
     .increment("votes", inc_votes)
     .returning("*")
     .then(article => {
-      //console.log(article);
       return { article: article };
     });
 };
@@ -69,11 +67,30 @@ exports.addCommentToArticle = (article_id, username, body) => {
     });
 };
 
-exports.fetchCommentByArticleId = article_id => {
-  console.log("In the model");
+exports.fetchCommentByArticleId = (sort_by, order_by, article_id) => {
   return connection("comments")
     .where("comments.article_id", "=", article_id)
+    .where("comments.article_id", "=", article_id)
+    .orderBy(sort_by || "created_at", order_by || "desc")
     .then(comments => {
-      console.log(comments);
+      // console.log(comments);
+      if (comments.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Id does not exist"
+        });
+      }
+      return { comments: comments };
+    });
+};
+
+exports.fetchArticles = () => {
+  return connection
+    .select("author", "title", "article_id", "topic", "created_at", "votes")
+    .from("articles")
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .count({ comment_count: "comments.article_id" })
+    .then(allArticles => {
+      return { articles: allArticles };
     });
 };

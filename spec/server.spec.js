@@ -1,7 +1,10 @@
 process.env.NODE_ENV = "test";
+const chai = require("chai");
+const { expect } = chai;
 const server = require("../server");
 const request = require("supertest");
-const { expect } = require("chai");
+chai.use(require("sams-chai-sorted"));
+
 const connection = require("../db/connection");
 
 describe("/api", () => {
@@ -202,13 +205,74 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("GET: /articles/:article_id/comments", () => {
-    it("responds with status 200 and sends back comment for a given article ID", () => {
+  describe("GET: /articles/:article_id/comments", () => {
+    it("responds with status 200 and sends back an array of comments for a given article ID", () => {
       return request(server)
-        .get("/api/articles/4/comments")
+        .get("/api/articles/5/comments")
         .expect(200)
         .then(response => {
-          expect(response.body.comments[0]).to.be.an("array");
+          expect(response.body.comments).to.be.an("array");
+          response.body.comments.forEach(comment => {
+            expect(comment.article_id).to.equal(5);
+          });
+        });
+    });
+    it("GET:404 responds with 'Id does not exist' when an article Id does not exist", () => {
+      return request(server)
+        .get("/api/articles/9999/comments")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Id does not exist");
+        });
+    });
+    it("GET:400 responds with 'Incorrect Data-type' when given an invalid id'", () => {
+      return request(server)
+        .get("/api/articles/dog/comments")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Incorrect Data-type");
+        });
+    });
+
+    //Error Bad request when trying to sort/order by a column that doesn't exist.
+    it("responds with status 200 and sorts comments by created_at and descending by default", () => {
+      return request(server)
+        .get("/api/articles/5/comments")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments).to.be.an("array");
+          expect(response.body.comments).to.be.sortedBy("created_at", {
+            descending: true
+          });
+        });
+    });
+  });
+  it("responds with status 200 and sorts comments by the specified query", () => {
+    return request(server)
+      .get("/api/articles/5/comments?sort_by=votes&order_by=asc")
+      .expect(200)
+      .then(response => {
+        expect(response.body.comments).to.be.sortedBy("votes", {
+          ascending: true
+        });
+      });
+  });
+  describe.only("GET: /articles", () => {
+    it("responds with status 200 and sends all articles", () => {
+      return request(server)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0]).to.be.an("object");
+          expect(response.body.articles[0]).to.have.keys(
+            "author",
+            "title",
+            "article_id",
+            "topic",
+            "created_at",
+            "votes",
+            "comment_count"
+          );
         });
     });
   });

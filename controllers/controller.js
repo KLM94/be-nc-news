@@ -4,8 +4,11 @@ const {
   fetchArticleById,
   updateArticleById,
   addCommentToArticle,
-  fetchCommentByArticleId
+  fetchCommentByArticleId,
+  fetchArticles
 } = require("../models/model");
+
+// >>>>>>>> REFACTOR TO USE EXPORTS
 
 const getTopics = (req, res, next) => {
   fetchTopics()
@@ -30,6 +33,7 @@ const getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   fetchArticleById(article_id)
     .then(function(article) {
+      console.log(article);
       res.status(200).send(article);
     })
     .catch(next);
@@ -51,7 +55,7 @@ const postCommentToArticle = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
   addCommentToArticle(article_id, username, body)
-    .then(function(comment) {
+    .then(comment => {
       //console.log(comment);
       res.status(201).send(comment);
     })
@@ -59,11 +63,22 @@ const postCommentToArticle = (req, res, next) => {
 };
 
 const getCommentByArticleId = (req, res, next) => {
-  console.log("IN THE CONTROLLER");
   const { article_id } = req.params;
-  fetchCommentByArticleId(article_id).then(comment => {
-    console.log(comment);
-  });
+  const { sort_by, order_by } = req.query;
+  fetchCommentByArticleId(sort_by, order_by, article_id)
+    .then(comment => {
+      res.status(200).send(comment);
+    })
+    .catch(next);
+};
+
+const getArticles = (req, res, next) => {
+  fetchArticles()
+    .then(articles => {
+      //console.log(articles);
+      res.status(200).send(articles);
+    })
+    .catch(next);
 };
 
 module.exports = {
@@ -72,5 +87,6 @@ module.exports = {
   getArticleById,
   patchArticleById,
   postCommentToArticle,
-  getCommentByArticleId
+  getCommentByArticleId,
+  getArticles
 };

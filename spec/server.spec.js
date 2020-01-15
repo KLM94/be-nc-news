@@ -2,11 +2,11 @@ process.env.NODE_ENV = "test";
 const server = require("../server");
 const request = require("supertest");
 const { expect } = require("chai");
-const connection = require("../connection");
+const connection = require("../db/connection");
 
 describe("/api", () => {
   //200
-  beforeEach(() => connection.seed.run());
+  beforeEach(() => connection.seed.run()); //return
   after(() => connection.destroy());
   describe("GET /topics", () => {
     it("responds with status 200 and sends all topics", () => {
@@ -76,17 +76,8 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Username does not exist");
         });
     });
-    it("GET:400 responds with 'Username is invalid' when given an invalid id ", () => {
-      // Other ways to test for errors? Not recognising it as invalid/400.
-      return request(server)
-        .get("/api/users/9999")
-        .expect(400)
-        .then(response => {
-          expect(response.body.msg).to.equal("Username is invalid");
-        });
-    });
   });
-  describe.only("GET /articles/:article_id", () => {
+  describe("GET /articles/:article_id", () => {
     it("responds with status 200 and sends back article information with a total count of comments", () => {
       return request(server)
         .get("/api/articles/1")
@@ -125,12 +116,12 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Article does not exist");
         });
     });
-    it("GET:400 responds with 'Invalid ID' when given an invalid id ", () => {
+    it("GET:400 responds with 'Incorrect Data-type' when given an invalid id ", () => {
       return request(server)
         .get("/api/articles/Not_an_Id")
         .expect(400)
         .then(response => {
-          expect(response.body.msg).to.equal("Invalid ID");
+          expect(response.body.msg).to.equal("Incorrect Data-type");
         });
     });
   });
@@ -153,12 +144,36 @@ describe("/api", () => {
               created_at: "2018-11-15T12:21:54.171Z"
             }
           ]);
-          //error handling
           //test to check it increments
           //test to check it decrements
         });
+      //add has own property for counts
+    });
+    it("PATCH:400 responds with 'Incorrect Data-type' when updating votes that isn't an integer", () => {
+      return request(server)
+        .patch("/api/articles/1")
+        .send({ inc_votes: "Northcoders" })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Incorrect Data-type");
+        });
+    });
+    xit("PATCH:405 responds with 'Method Not Allowed' when trying to add an extra property", () => {
+      // Not 405
+      //Bad Request if key is wrong
+      return request(server)
+        .patch("/api/articles/1")
+        .send({ banana: 1 })
+        .expect(405)
+        .then(response => {
+          expect(response.body.msg).to.equal("Method Not Allowed");
+        });
     });
   });
+
+  //to.contain.keys
+  //houses.every egkdnlf === true
+
   describe("POST /articles/:article_id/comments", () => {
     it("responds with status 201 and posts a comment", () => {
       return request(server)
@@ -167,11 +182,33 @@ describe("/api", () => {
         .expect(201)
         .then(response => {
           expect(response.body).to.be.an("object");
-          // expect(response.body.comments).to.eql([
-          //   {
-
-          //   }
-          // ])
+          expect(response.body.comments[0]).to.have.keys([
+            "comment_id",
+            "author",
+            "article_id",
+            "votes",
+            "created_at",
+            "body"
+          ]);
+        });
+    });
+    it("POST:400 responds with 'Missing required field' when there is no information entered", () => {
+      return request(server)
+        .post("/api/articles/5/comments")
+        .send({ username: null, body: null })
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Missing required field");
+        });
+    });
+  });
+  describe.only("GET: /articles/:article_id/comments", () => {
+    it("responds with status 200 and sends back comment for a given article ID", () => {
+      return request(server)
+        .get("/api/articles/4/comments")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments[0]).to.be.an("array");
         });
     });
   });

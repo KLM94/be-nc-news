@@ -3,7 +3,8 @@ const {
   fetchUsersByUsername,
   fetchArticleById,
   updateArticleById,
-  addCommentToArticle
+  addCommentToArticle,
+  fetchCommentByArticleId
 } = require("../models/model");
 
 const getTopics = (req, res, next) => {
@@ -39,21 +40,30 @@ const patchArticleById = (req, res, next) => {
   const { inc_votes } = req.body;
   updateArticleById(article_id, inc_votes)
     .then(function(article) {
+      // console.log(article);
       res.status(200).send(article);
     })
     .catch(next);
 };
 
 const postCommentToArticle = (req, res, next) => {
-  console.log("IN THE CONTROLLER");
+  //console.log("IN THE CONTROLLER");
   const { article_id } = req.params;
   const { username, body } = req.body;
   addCommentToArticle(article_id, username, body)
     .then(function(comment) {
-      console.log(username, body);
+      //console.log(comment);
       res.status(201).send(comment);
     })
     .catch(next);
+};
+
+const getCommentByArticleId = (req, res, next) => {
+  console.log("IN THE CONTROLLER");
+  const { article_id } = req.params;
+  fetchCommentByArticleId(article_id).then(comment => {
+    console.log(comment);
+  });
 };
 
 module.exports = {
@@ -61,5 +71,6 @@ module.exports = {
   getUserByUsername,
   getArticleById,
   patchArticleById,
-  postCommentToArticle
+  postCommentToArticle,
+  getCommentByArticleId
 };

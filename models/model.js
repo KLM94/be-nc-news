@@ -1,4 +1,4 @@
-const connection = require("../connection");
+const connection = require("../db/connection");
 
 exports.fetchTopics = () => {
   return connection
@@ -51,7 +51,7 @@ exports.updateArticleById = (article_id, inc_votes) => {
     .increment("votes", inc_votes)
     .returning("*")
     .then(article => {
-      // console.log(article);
+      //console.log(article);
       return { article: article };
     });
 };
@@ -66,5 +66,14 @@ exports.addCommentToArticle = (article_id, username, body) => {
     .returning("*")
     .then(comment => {
       return { comments: comment };
+    });
+};
+
+exports.fetchCommentByArticleId = article_id => {
+  console.log("In the model");
+  return connection("comments")
+    .where("comments.article_id", "=", article_id)
+    .then(comments => {
+      console.log(comments);
     });
 };

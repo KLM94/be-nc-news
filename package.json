@@ -13,7 +13,7 @@
     "migrate-rollback": "knex migrate:rollback",
     "server-test": "mocha spec/server.spec.js",
     "dev": "nodemon listen.js",
-    "query": "psql -f ./testing./query.sql > query-output.txt"
+    "query": "psql -f ./testing/query.sql"
   },
   "repository": {
     "type": "git",

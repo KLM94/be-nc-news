@@ -1,4 +1,4 @@
 node_modules
 
-knexfile
-query.sql
+knexfile.js
+testing/query.sql

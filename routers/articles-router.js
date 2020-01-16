@@ -5,14 +5,18 @@ const {
   patchArticleById,
   postCommentToArticle,
   getCommentByArticleId
-} = require("../controllers/controller");
+} = require("../controllers/articles-controller");
 
-//>>>>>>>>>>>>>>REFACTOR TO USE ROUTE
+articlesRouter.route("/").get(getArticles);
 
-articlesRouter.get("/", getArticles);
-articlesRouter.get("/:article_id", getArticleById);
-articlesRouter.get("/:article_id/comments", getCommentByArticleId);
-articlesRouter.patch("/:article_id", patchArticleById);
-articlesRouter.post("/:article_id/comments", postCommentToArticle);
+articlesRouter
+  .route("/:article_id")
+  .get(getArticleById)
+  .patch(patchArticleById);
+
+articlesRouter
+  .route("/:article_id/comments")
+  .get(getCommentByArticleId)
+  .post(postCommentToArticle);
 
 module.exports = articlesRouter;

@@ -1,7 +1,7 @@
 process.env.NODE_ENV = "test";
 const chai = require("chai");
 const { expect } = chai;
-const server = require("../server");
+const app = require("../app");
 const request = require("supertest");
 chai.use(require("sams-chai-sorted"));
 
@@ -13,8 +13,8 @@ describe("/api", () => {
   after(() => connection.destroy());
   describe("GET /topics", () => {
     it("responds with status 200 and sends all topics", () => {
-      return request(server)
-        .get("/api/topics") //How to error handle in spec as all other errors are dealt with in the path.
+      return request(app)
+        .get("/api/topics")
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
@@ -46,7 +46,7 @@ describe("/api", () => {
   });
   describe("GET /users/:username", () => {
     it("responds with status 200 and gives back the correct information when a username is passed", () => {
-      return request(server)
+      return request(app)
         .get("/api/users/butter_bridge")
         .expect(200)
         .then(response => {
@@ -72,7 +72,7 @@ describe("/api", () => {
         });
     });
     it("GET:404 responds with 'Username does not exist' when given an id that does not exist", () => {
-      return request(server)
+      return request(app)
         .get("/api/users/bbutters")
         .expect(404)
         .then(response => {
@@ -82,7 +82,7 @@ describe("/api", () => {
   });
   describe("GET /articles/:article_id", () => {
     it("responds with status 200 and sends back article information with a total count of comments", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles/1")
         .expect(200)
         .then(response => {
@@ -112,7 +112,7 @@ describe("/api", () => {
         });
     });
     it("GET:404 responds with 'Article does not exist' when given an id that doesn't exist", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles/9999")
         .expect(404)
         .then(response => {
@@ -120,7 +120,7 @@ describe("/api", () => {
         });
     });
     it("GET:400 responds with 'Incorrect Data-type' when given an invalid id ", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles/Not_an_Id")
         .expect(400)
         .then(response => {
@@ -130,9 +130,9 @@ describe("/api", () => {
   });
   describe("PATCH /articles/:article_id", () => {
     it("responds with status 200 and updates the votes", () => {
-      return request(server)
+      return request(app)
         .patch("/api/articles/1")
-        .send({ inc_votes: 4 })
+        .send({ votes: 4 })
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
@@ -147,29 +147,28 @@ describe("/api", () => {
               created_at: "2018-11-15T12:21:54.171Z"
             }
           ]);
+          //look at chai change in docs
           //test to check it increments
           //test to check it decrements
         });
       //add has own property for counts
     });
     it("PATCH:400 responds with 'Incorrect Data-type' when updating votes that isn't an integer", () => {
-      return request(server)
+      return request(app)
         .patch("/api/articles/1")
-        .send({ inc_votes: "Northcoders" })
+        .send({ votes: "Northcoders" })
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Incorrect Data-type");
         });
     });
-    xit("PATCH:405 responds with 'Method Not Allowed' when trying to add an extra property", () => {
-      // Not 405
-      //Bad Request if key is wrong
-      return request(server)
+    it("PATCH:400 responds with 'Bad Request' when trying to add the incorrect property", () => {
+      return request(app)
         .patch("/api/articles/1")
-        .send({ banana: 1 })
-        .expect(405)
+        .send({ oops: 1 })
+        .expect(400)
         .then(response => {
-          expect(response.body.msg).to.equal("Method Not Allowed");
+          expect(response.body.msg).to.equal("Bad Request");
         });
     });
   });
@@ -179,7 +178,7 @@ describe("/api", () => {
 
   describe("POST /articles/:article_id/comments", () => {
     it("responds with status 201 and posts a comment", () => {
-      return request(server)
+      return request(app)
         .post("/api/articles/4/comments")
         .send({ username: "rogersop", body: "Look at my new comment!" })
         .expect(201)
@@ -196,7 +195,7 @@ describe("/api", () => {
         });
     });
     it("POST:400 responds with 'Missing required field' when there is no information entered", () => {
-      return request(server)
+      return request(app)
         .post("/api/articles/5/comments")
         .send({ username: null, body: null })
         .expect(400)
@@ -207,7 +206,7 @@ describe("/api", () => {
   });
   describe("GET: /articles/:article_id/comments", () => {
     it("responds with status 200 and sends back an array of comments for a given article ID", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles/5/comments")
         .expect(200)
         .then(response => {
@@ -218,7 +217,7 @@ describe("/api", () => {
         });
     });
     it("GET:404 responds with 'Id does not exist' when an article Id does not exist", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles/9999/comments")
         .expect(404)
         .then(response => {
@@ -226,7 +225,7 @@ describe("/api", () => {
         });
     });
     it("GET:400 responds with 'Incorrect Data-type' when given an invalid id'", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles/dog/comments")
         .expect(400)
         .then(response => {
@@ -234,9 +233,8 @@ describe("/api", () => {
         });
     });
 
-    //Error Bad request when trying to sort/order by a column that doesn't exist.
-    it("responds with status 200 and sorts comments by created_at and descending by default", () => {
-      return request(server)
+    it("responds with status 200 and sorts comments by created_at and orders by descending by default", () => {
+      return request(app)
         .get("/api/articles/5/comments")
         .expect(200)
         .then(response => {
@@ -246,9 +244,12 @@ describe("/api", () => {
           });
         });
     });
+
+    //Error Bad request when trying to sort/order by a column that doesn't exist.
+    //Promise.All
   });
   it("responds with status 200 and sorts comments by the specified query", () => {
-    return request(server)
+    return request(app)
       .get("/api/articles/5/comments?sort_by=votes&order_by=asc")
       .expect(200)
       .then(response => {
@@ -257,15 +258,26 @@ describe("/api", () => {
         });
       });
   });
-  describe.only("GET: /articles", () => {
+  it("GET:400 responds with 'Column does not exist' when trying to sort and/or order columns that does not exist", () => {
+    return request(app)
+      .get("/api/articles/5/comments?sort_by=dog")
+      .expect(400)
+      .then(response => {
+        expect(response.body.msg).to.equal("Column does not exist");
+      });
+  });
+  describe("GET: /articles", () => {
     it("responds with status 200 and sends all articles", () => {
-      return request(server)
+      return request(app)
         .get("/api/articles")
         .expect(200)
         .then(response => {
+          // test length of articles array
+          expect(response.body.articles.length).to.equal(12);
           expect(response.body.articles[0]).to.be.an("object");
           expect(response.body.articles[0]).to.have.keys(
             "author",
+            "body",
             "title",
             "article_id",
             "topic",
@@ -275,5 +287,108 @@ describe("/api", () => {
           );
         });
     });
+    it("responds with status 200 and sorts articles by date and orders by descending by default", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("created_at", {
+            descending: true
+          });
+        });
+    });
+    it("responds with status 200 and sorts articles by the specified query and order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic&order_by=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("topic", {
+            ascending: true
+          });
+        });
+    });
+    it("responds with status 200 and filters articles by the specified author ", () => {
+      return request(app)
+        .get("/api/articles/?author=butter_bridge")
+        .expect(200)
+        .then(response => {
+          expect(
+            response.body.articles.every(
+              article => article.author === "butter_bridge"
+            )
+          ).to.be.true;
+        });
+    });
+    it("responds with status 200 and filters articles by the specified topic", () => {
+      return request(app)
+        .get("/api/articles/?topic=mitch")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles[0].topic).to.equal("mitch");
+        });
+    });
+    it('GET:400 responds with "Column does not exist" when trying to sort a column that does not exist', () => {
+      return request(app)
+        .get("/api/articles?sort_by=northcoders")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Column does not exist");
+        });
+    });
+    xit('GET:400 responds with "Bad request" when trying to order by anything other than asc or desc', () => {
+      return request(app)
+        .get("/api/articles?sort_by=topic&order_by=f")
+        .expect(400)
+        .then(response => {
+          expect(response.body.msg).to.equal("Bad request");
+        });
+    });
+    xit('GET:404 responds with "Does not exist" if there are no authors', () => {
+      return request(app)
+        .get("/api/articles?topic=dog")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Does not exist");
+        });
+    });
+    // it('responds with status 200 and an empty array if an author exists but does not have any articles', () => {
+    //   return request(app)
+    //   .get('/api/articles')
+    // });
+  });
+  describe.only("PATCH /comments/:comment_id", () => {
+    it("responds with status 200 and updates the votes", () => {
+      return request(app)
+        .patch("/api/comments/")
+        .expect(200);
+    });
   });
 });
+
+// describe("PATCH /articles/:article_id", () => {
+//   it("responds with status 200 and updates the votes", () => {
+//     return request(app)
+//       .patch("/api/articles/1")
+//       .send({ votes: 4 })
+//       .expect(200)
+//       .then(response => {
+//         expect(response.body).to.be.an("object");
+//         expect(response.body.article).to.eql([
+//           {
+//             article_id: 1,
+//             title: "Living in the shadow of a great man",
+//             body: "I find this existence challenging",
+//             votes: 104,
+//             topic: "mitch",
+//             author: "butter_bridge",
+//             created_at: "2018-11-15T12:21:54.171Z"
+//           }
+//         ]);
+//         //look at chai change in docs
+//         //test to check it increments
+//         //test to check it decrements
+//       });
+//     //add has own property for counts
+//   });

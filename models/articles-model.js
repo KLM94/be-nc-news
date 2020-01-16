@@ -1,31 +1,6 @@
 const connection = require("../db/connection");
 
-exports.fetchTopics = () => {
-  return connection
-    .select("*")
-    .from("topics")
-    .then(allTopics => {
-      return { topics: allTopics };
-    });
-};
-
-exports.fetchUsersByUsername = username => {
-  return connection
-    .select("*")
-    .from("users")
-    .where("username", username)
-    .then(user => {
-      if (user.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "Username does not exist"
-        });
-      }
-      return { user: user };
-    });
-};
-
-exports.fetchArticleById = article_id => {
+exports.selectArticleById = article_id => {
   return connection
     .select("articles.*")
     .from("articles")
@@ -44,12 +19,18 @@ exports.fetchArticleById = article_id => {
     });
 };
 
-exports.updateArticleById = (article_id, inc_votes) => {
+exports.updateArticleById = (article_id, votes) => {
   return connection("articles")
     .where("article_id", "=", article_id)
-    .increment("votes", inc_votes)
+    .increment("votes", votes)
     .returning("*")
     .then(article => {
+      if (votes === undefined) {
+        return Promise.reject({
+          status: 400,
+          msg: "Bad Request"
+        });
+      }
       return { article: article };
     });
 };
@@ -67,7 +48,7 @@ exports.addCommentToArticle = (article_id, username, body) => {
     });
 };
 
-exports.fetchCommentByArticleId = (sort_by, order_by, article_id) => {
+exports.selectCommentByArticleId = (sort_by, order_by, article_id) => {
   return connection("comments")
     .where("comments.article_id", "=", article_id)
     .where("comments.article_id", "=", article_id)
@@ -84,12 +65,18 @@ exports.fetchCommentByArticleId = (sort_by, order_by, article_id) => {
     });
 };
 
-exports.fetchArticles = () => {
+exports.selectArticles = (sort_by, order_by, author, topic) => {
   return connection
-    .select("author", "title", "article_id", "topic", "created_at", "votes")
+    .select("articles.*")
     .from("articles")
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .count({ comment_count: "comments.article_id" })
+    .groupBy("articles.article_id")
+    .orderBy(sort_by || "created_at", order_by || "desc")
+    .modify(query => {
+      if (author) query.where("articles.author", "=", author);
+      if (topic) query.where("articles.topic", "=", topic);
+    })
     .then(allArticles => {
       return { articles: allArticles };
     });

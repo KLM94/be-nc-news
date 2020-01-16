@@ -1,23 +1,23 @@
 const express = require("express");
 const apiRouter = require("./routers/api-router.js");
-const server = express();
+const app = express();
 const {
   handleCustomErrors,
   handlePsqlErrors,
   handleServerErrors
 } = require("./errors/index");
 
-server.use(express.json());
+app.use(express.json());
 
-server.use("/api", apiRouter);
+app.use("/api", apiRouter);
 
-server.all("/*", (err, req, res, next) => {
+app.all("/*", (err, req, res, next) => {
   //console.log(err);
   res.status(500).send({ msg: "Internal server error" });
 });
 
-server.use(handleCustomErrors);
-server.use(handlePsqlErrors);
-server.use(handleServerErrors);
+app.use(handleCustomErrors);
+app.use(handlePsqlErrors);
+app.use(handleServerErrors);
 
-module.exports = server;
+module.exports = app;

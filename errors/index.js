@@ -1,6 +1,4 @@
 const handleCustomErrors = (err, req, res, next) => {
-  //console.log(err);
-
   if (err.status) {
     res.status(err.status).send({ msg: err.msg });
   } else {
@@ -9,11 +7,12 @@ const handleCustomErrors = (err, req, res, next) => {
 };
 
 const handlePsqlErrors = (err, req, res, next) => {
-  console.log(err);
+  //console.log(err);
   if (err.code) {
     const errorCodes = {
       "22P02": [400, "Incorrect Data-type"],
-      "23502": [400, "Missing required field"]
+      "23502": [400, "Missing required field"],
+      "42703": [400, "Column does not exist"]
     };
     res.status(errorCodes[err.code][0]).send({ msg: errorCodes[err.code][1] });
   }

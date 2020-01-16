@@ -11,7 +11,7 @@
     "migrate-make": "knex migrate:make",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
-    "server-test": "mocha spec/server.spec.js",
+    "app-test": "mocha spec/app.spec.js",
     "dev": "nodemon listen.js",
     "query": "psql -f ./testing/query.sql"
   },

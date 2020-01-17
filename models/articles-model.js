@@ -77,7 +77,13 @@ exports.selectArticles = (sort_by, order_by, author, topic) => {
       if (author) query.where("articles.author", "=", author);
       if (topic) query.where("articles.topic", "=", topic);
     })
-    .then(allArticles => {
-      return { articles: allArticles };
+    .then(article => {
+      // if (order_by != "asc" || order_by != "desc") {
+      //   return Promise.reject({
+      //     status: 400,
+      //     msg: "Bad request"
+      //   });
+      // }
+      return { articles: article };
     });
 };

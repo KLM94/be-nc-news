@@ -1,23 +1,11 @@
 const connection = require("../db/connection");
 
-exports.updateCommentById = () => {
-  return connection("comments").then(comments => {
-    return { comment: comments };
-  });
+exports.updateCommentById = (comment_id, inc_votes) => {
+  return connection("comments")
+    .where("comment_id", "=", comment_id)
+    .increment("votes", inc_votes)
+    .returning("*")
+    .then(comment => {
+      return { comment: comment };
+    });
 };
-
-// exports.updateArticleById = (article_id, votes) => {
-//   return connection("articles")
-//     .where("article_id", "=", article_id)
-//     .increment("votes", votes)
-//     .returning("*")
-//     .then(article => {
-//       if (votes === undefined) {
-//         return Promise.reject({
-//           status: 400,
-//           msg: "Bad Request"
-//         });
-//       }
-//       return { article: article };
-//     });
-// };

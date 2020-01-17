@@ -129,29 +129,25 @@ describe("/api", () => {
     });
   });
   describe("PATCH /articles/:article_id", () => {
-    it("responds with status 200 and updates the votes", () => {
+    it("responds with status 200 and updates and increments the votes", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({ votes: 4 })
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.article).to.eql([
-            {
-              article_id: 1,
-              title: "Living in the shadow of a great man",
-              body: "I find this existence challenging",
-              votes: 104,
-              topic: "mitch",
-              author: "butter_bridge",
-              created_at: "2018-11-15T12:21:54.171Z"
-            }
-          ]);
-          //look at chai change in docs
-          //test to check it increments
-          //test to check it decrements
+          expect(response.body.article[0].votes).to.equal(104);
         });
-      //add has own property for counts
+    });
+    it("responds with status 200 and updates and decrements the votes", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send({ votes: -4 })
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.be.an("object");
+          expect(response.body.article[0].votes).to.equal(96);
+        });
     });
     it("PATCH:400 responds with 'Incorrect Data-type' when updating votes that isn't an integer", () => {
       return request(app)
@@ -339,18 +335,26 @@ describe("/api", () => {
     });
     xit('GET:400 responds with "Bad request" when trying to order by anything other than asc or desc', () => {
       return request(app)
-        .get("/api/articles?sort_by=topic&order_by=f")
+        .get("/api/articles?sort_by=topic&order_by=abc")
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Bad request");
         });
     });
-    xit('GET:404 responds with "Does not exist" if there are no authors', () => {
+    xit('GET:404 responds with "Author does not exist" if there are no authors', () => {
+      return request(app)
+        .get("/api/articles?author=dog")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Author does not exist");
+        });
+    });
+    xit('GET:404 responds with "Topic does not exist" if there are no topics', () => {
       return request(app)
         .get("/api/articles?topic=dog")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("Does not exist");
+          expect(response.body.msg).to.equal("Topic does not exist");
         });
     });
     // it('responds with status 200 and an empty array if an author exists but does not have any articles', () => {
@@ -358,37 +362,26 @@ describe("/api", () => {
     //   .get('/api/articles')
     // });
   });
-  describe.only("PATCH /comments/:comment_id", () => {
-    it("responds with status 200 and updates the votes", () => {
+  describe("PATCH /comments/:comment_id", () => {
+    it("responds with status 200 and updates and increments the votes", () => {
       return request(app)
-        .patch("/api/comments/")
-        .expect(200);
+        .patch("/api/comments/5")
+        .send({ inc_votes: 2 })
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.be.an("object");
+          expect(response.body.comment[0].votes).to.equal(2);
+        });
+    });
+    it("responds with status 200 and updates and decrements the votes", () => {
+      return request(app)
+        .patch("/api/comments/5")
+        .send({ inc_votes: -2 })
+        .expect(200)
+        .then(response => {
+          expect(response.body).to.be.an("object");
+          expect(response.body.comment[0].votes).to.equal(-2);
+        });
     });
   });
 });
-
-// describe("PATCH /articles/:article_id", () => {
-//   it("responds with status 200 and updates the votes", () => {
-//     return request(app)
-//       .patch("/api/articles/1")
-//       .send({ votes: 4 })
-//       .expect(200)
-//       .then(response => {
-//         expect(response.body).to.be.an("object");
-//         expect(response.body.article).to.eql([
-//           {
-//             article_id: 1,
-//             title: "Living in the shadow of a great man",
-//             body: "I find this existence challenging",
-//             votes: 104,
-//             topic: "mitch",
-//             author: "butter_bridge",
-//             created_at: "2018-11-15T12:21:54.171Z"
-//           }
-//         ]);
-//         //look at chai change in docs
-//         //test to check it increments
-//         //test to check it decrements
-//       });
-//     //add has own property for counts
-//   });

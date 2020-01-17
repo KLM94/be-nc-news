@@ -50,7 +50,6 @@ exports.getArticles = (req, res, next) => {
   const { sort_by, order_by, author, topic } = req.query;
   selectArticles(sort_by, order_by, author, topic)
     .then(articles => {
-      //console.log(articles);
       res.status(200).send(articles);
     })
     .catch(next);

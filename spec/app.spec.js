@@ -8,8 +8,7 @@ chai.use(require("sams-chai-sorted"));
 const connection = require("../db/connection");
 
 describe("/api", () => {
-  //200
-  beforeEach(() => connection.seed.run()); //return
+  beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
   describe("GET /topics", () => {
     it("responds with status 200 and sends all topics", () => {
@@ -37,27 +36,24 @@ describe("/api", () => {
     });
   });
   describe("GET /users/:username", () => {
-    it.only("responds with status 200 and gives back the correct information when a username is passed", () => {
+    it("responds with status 200 and gives back the correct information when a username is passed", () => {
       return request(app)
         .get("/api/users/butter_bridge")
         .expect(200)
         .then(response => {
-          //console.log(response.body);
           expect(response.body).to.be.an("object");
-          expect(response.body.user[0]).to.have.keys([
+          expect(response.body.user).to.have.keys([
             "username",
             "name",
             "avatar_url"
           ]);
-          expect(response.body.user).to.eql([
-            {
-              username: "butter_bridge",
-              name: "jonny",
-              avatar_url:
-                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-            }
-          ]);
-          expect(response.body.user[0]).to.have.keys([
+          expect(response.body.user).to.eql({
+            username: "butter_bridge",
+            name: "jonny",
+            avatar_url:
+              "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+          });
+          expect(response.body.user).to.have.keys([
             "username",
             "name",
             "avatar_url"
@@ -80,17 +76,7 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.articles[0]).to.have.keys([
-            "article_id",
-            "title",
-            "body",
-            "votes",
-            "topic",
-            "author",
-            "created_at",
-            "comment_count"
-          ]);
-          expect(response.body.articles).to.eql([
+          expect(response.body.article).to.eql([
             {
               article_id: 1,
               title: "Living in the shadow of a great man",
@@ -125,7 +111,7 @@ describe("/api", () => {
     it("responds with status 200 and updates and increments the votes", () => {
       return request(app)
         .patch("/api/articles/1")
-        .send({ votes: 4 })
+        .send({ inc_votes: 4 })
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
@@ -135,20 +121,20 @@ describe("/api", () => {
     it("responds with status 200 and updates and decrements the votes", () => {
       return request(app)
         .patch("/api/articles/1")
-        .send({ votes: -4 })
+        .send({ inc_votes: -4 })
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
           expect(response.body.article[0].votes).to.equal(96);
         });
     });
-    it("PATCH:400 responds with 'Incorrect Data-type' when updating votes that isn't an integer", () => {
+    it("PATCH:400 responds with 'Bad Request' when updating votes that isn't an integer", () => {
       return request(app)
         .patch("/api/articles/1")
         .send({ votes: "Northcoders" })
         .expect(400)
         .then(response => {
-          expect(response.body.msg).to.equal("Incorrect Data-type");
+          expect(response.body.msg).to.equal("Bad Request");
         });
     });
     it("PATCH:400 responds with 'Bad Request' when trying to add the incorrect property", () => {
@@ -173,7 +159,7 @@ describe("/api", () => {
         .expect(201)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.comments[0]).to.have.keys([
+          expect(response.body.comment[0]).to.have.keys([
             "comment_id",
             "author",
             "article_id",
@@ -222,7 +208,7 @@ describe("/api", () => {
         });
     });
 
-    it("responds with status 200 and sorts comments by created_at and orders by descending by default", () => {
+    it("responds with status 200 and sorts comments by created_at", () => {
       return request(app)
         .get("/api/articles/5/comments")
         .expect(200)
@@ -233,20 +219,28 @@ describe("/api", () => {
           });
         });
     });
-
-    //Error Bad request when trying to sort/order by a column that doesn't exist.
-    //Promise.All
-  });
-  it("responds with status 200 and sorts comments by the specified query", () => {
-    return request(app)
-      .get("/api/articles/5/comments?sort_by=votes&order_by=asc")
-      .expect(200)
-      .then(response => {
-        expect(response.body.comments).to.be.sortedBy("votes", {
-          ascending: true
+    it("responds with status 200 and sorts comments by the specified query", () => {
+      return request(app)
+        .get("/api/articles/5/comments?sort_by=votes&order=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments).to.be.sortedBy("votes", {
+            ascending: true
+          });
         });
-      });
+    });
+    it("responds with status 200 and order comments by asc or desc", () => {
+      return request(app)
+        .get("/api/articles/1/comments?order=asc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments).to.be.sortedBy("created_at", {
+            ascending: true
+          });
+        });
+    });
   });
+
   it("GET:400 responds with 'Column does not exist' when trying to sort and/or order columns that does not exist", () => {
     return request(app)
       .get("/api/articles/5/comments?sort_by=dog")
@@ -286,13 +280,13 @@ describe("/api", () => {
           });
         });
     });
-    xit("responds with status 200 and sorts articles by the specified query and order", () => {
+    it("responds with status 200 and sorts articles by the specified query and order", () => {
       return request(app)
-        .get("/api/articles?sort_by=topic&order_by=asc")
+        .get("/api/articles?sort_by=topic&order=asc")
         .expect(200)
         .then(response => {
-          expect(response.body).to.be.an("array");
-          expect(response.body).to.be.sortedBy("topic", {
+          expect(response.body.articles).to.be.an("array");
+          expect(response.body.articles).to.be.sortedBy("topic", {
             ascending: true
           });
         });
@@ -327,7 +321,7 @@ describe("/api", () => {
     });
     it('GET:400 responds with "Bad request" when trying to order by anything other than asc or desc', () => {
       return request(app)
-        .get("/api/articles?sort_by=topic&order_by=abc")
+        .get("/api/articles?sort_by=topic&order=abc")
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Bad request");
@@ -376,11 +370,9 @@ describe("/api", () => {
         .send({ inc_votes: 2 })
         .expect(200)
         .then(response => {
-          expect(response.body).to.be.an("object");
           // console.log(response.body);
-
-          //needs to be sent back an object, not an array of objects
-          expect(response.body.comment[0].votes).to.equal(2);
+          expect(response.body).to.be.an("object");
+          expect(response.body.comment.votes).to.equal(2);
         });
     });
     it("responds with status 200 and updates and decrements the votes", () => {
@@ -390,13 +382,10 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          // console.log(response.body);
-
-          //needs to be sent back an object, not an array of objects
-          expect(response.body.comment[0].votes).to.equal(-2);
+          expect(response.body.comment.votes).to.equal(-2);
         });
     });
-    it.only("PATCH:404 responds with 'Id does not exist' when it contains a valid comment_id that does not exist", () => {
+    it("PATCH:404 responds with 'Id does not exist' when it contains a valid comment_id that does not exist", () => {
       return request(app)
         .patch("/api/comments/99999")
         .expect(404)
@@ -405,7 +394,7 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("DELETE /comments/:comment_id", () => {
+  describe("DELETE /comments/:comment_id", () => {
     it("DELETE:204 deletes the given comment by comment_id", () => {
       return request(app)
         .delete("/api/comments/5")
@@ -416,7 +405,6 @@ describe("/api", () => {
         .delete("/api/comments/not-an-id")
         .expect(400)
         .then(response => {
-          console.log(response.body.msg);
           expect(response.body.msg).to.equal("Incorrect Data-type");
         });
     });

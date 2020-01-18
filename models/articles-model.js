@@ -19,13 +19,13 @@ exports.selectArticleById = article_id => {
     });
 };
 
-exports.updateArticleById = (article_id, votes) => {
+exports.updateArticleById = (article_id, inc_votes) => {
   return connection("articles")
     .where("article_id", "=", article_id)
-    .increment("votes", votes)
+    .increment("votes", inc_votes)
     .returning("*")
     .then(article => {
-      if (votes === undefined) {
+      if (inc_votes === undefined) {
         return Promise.reject({
           status: 400,
           msg: "Bad Request"
@@ -48,13 +48,12 @@ exports.addCommentToArticle = (article_id, username, body) => {
     });
 };
 
-exports.selectCommentByArticleId = (sort_by, order_by, article_id) => {
+exports.selectCommentByArticleId = (sort_by, order, article_id) => {
   return connection("comments")
     .where("comments.article_id", "=", article_id)
     .where("comments.article_id", "=", article_id)
-    .orderBy(sort_by || "created_at", order_by || "desc")
+    .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
-      // console.log(comments);
       if (comments.length === 0) {
         return Promise.reject({
           status: 404,
@@ -65,20 +64,20 @@ exports.selectCommentByArticleId = (sort_by, order_by, article_id) => {
     });
 };
 
-exports.selectArticles = (sort_by, order_by, author, topic) => {
+exports.selectArticles = (sort_by, order, author, topic) => {
   return connection
     .select("articles.*")
     .from("articles")
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .count({ comment_count: "comments.article_id" })
     .groupBy("articles.article_id")
-    .orderBy(sort_by || "created_at", order_by || "desc")
+    .orderBy(sort_by || "created_at", order || "desc")
     .modify(query => {
       if (author) query.where("articles.author", "=", author);
       if (topic) query.where("articles.topic", "=", topic);
     })
     .then(articles => {
-      if ((order_by != "asc" || order_by != "desc") && order_by != undefined) {
+      if (order != "asc" && order != "desc" && order != undefined) {
         return Promise.reject({
           status: 400,
           msg: "Bad request"

@@ -12,7 +12,7 @@ exports.updateCommentById = (comment_id, inc_votes) => {
           msg: "Id does not exist"
         });
       }
-      return { comment: comment };
+      return { comment: comment[0] };
     });
 };
 

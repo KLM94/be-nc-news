@@ -12,6 +12,6 @@ exports.selectUsersByUsername = username => {
           msg: "Username does not exist"
         });
       }
-      return { user: user };
+      return { user: user[0] };
     });
 };

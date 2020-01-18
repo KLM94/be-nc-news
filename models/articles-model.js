@@ -15,7 +15,7 @@ exports.selectArticleById = article_id => {
           msg: "Article does not exist"
         });
       }
-      return { articles: articles };
+      return { article: articles };
     });
 };
 
@@ -44,7 +44,7 @@ exports.addCommentToArticle = (article_id, username, body) => {
     })
     .returning("*")
     .then(comment => {
-      return { comments: comment };
+      return { comment: comment };
     });
 };
 
@@ -77,13 +77,54 @@ exports.selectArticles = (sort_by, order_by, author, topic) => {
       if (author) query.where("articles.author", "=", author);
       if (topic) query.where("articles.topic", "=", topic);
     })
-    .then(article => {
-      // if (order_by != "asc" || order_by != "desc") {
-      //   return Promise.reject({
-      //     status: 400,
-      //     msg: "Bad request"
-      //   });
-      // }
-      return { articles: article };
+    .then(articles => {
+      if ((order_by != "asc" || order_by != "desc") && order_by != undefined) {
+        return Promise.reject({
+          status: 400,
+          msg: "Bad request"
+        });
+      }
+      if (articles.length === 0 && author != undefined) {
+        return selectAuthor(author);
+      }
+      if (articles.length === 0 && topic != undefined) {
+        return selectTopic(topic);
+      }
+
+      return { articles };
+    });
+};
+
+//const promiseAll = Promise.all([selectAuthor, selectTopic]);
+//REFACTOR AND MAKE USE OF PROMISE ALL
+
+const selectAuthor = author => {
+  return connection("users.*")
+    .from("users")
+    .where("users.username", "=", author)
+    .then(author => {
+      if (author.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Author does not exist"
+        });
+      }
+      return [];
+    });
+};
+
+const selectTopic = topic => {
+  return connection("topics.*")
+    .from("topics")
+    .where("topics.slug", "=", topic)
+
+    .then(topic => {
+      if (topic.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Topic does not exist"
+        });
+      }
+      return [];
     });
 };

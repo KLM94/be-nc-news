@@ -18,6 +18,7 @@ exports.getArticleById = (req, res, next) => {
 exports.patchArticleById = (req, res, next) => {
   const { article_id } = req.params;
   const { votes } = req.body;
+  //inc_votes
 
   updateArticleById(article_id, votes)
     .then(article => {
@@ -50,6 +51,7 @@ exports.getArticles = (req, res, next) => {
   const { sort_by, order_by, author, topic } = req.query;
   selectArticles(sort_by, order_by, author, topic)
     .then(articles => {
+      //console.log(articles);
       res.status(200).send(articles);
     })
     .catch(next);

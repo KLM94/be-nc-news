@@ -35,21 +35,14 @@ describe("/api", () => {
           ]);
         });
     });
-    // it("GET:400 responds with 'Missing required fields' when there is no data", () => {
-    //   return request(server)
-    //     .get("/api/topics")
-    //     .expect(400)
-    //     .then(response => {
-    //       expect(response.body.msg).to.equal("Missing required fields");
-    //     });
-    // });
   });
   describe("GET /users/:username", () => {
-    it("responds with status 200 and gives back the correct information when a username is passed", () => {
+    it.only("responds with status 200 and gives back the correct information when a username is passed", () => {
       return request(app)
         .get("/api/users/butter_bridge")
         .expect(200)
         .then(response => {
+          //console.log(response.body);
           expect(response.body).to.be.an("object");
           expect(response.body.user[0]).to.have.keys([
             "username",
@@ -268,7 +261,6 @@ describe("/api", () => {
         .get("/api/articles")
         .expect(200)
         .then(response => {
-          // test length of articles array
           expect(response.body.articles.length).to.equal(12);
           expect(response.body.articles[0]).to.be.an("object");
           expect(response.body.articles[0]).to.have.keys(
@@ -294,13 +286,13 @@ describe("/api", () => {
           });
         });
     });
-    it("responds with status 200 and sorts articles by the specified query and order", () => {
+    xit("responds with status 200 and sorts articles by the specified query and order", () => {
       return request(app)
         .get("/api/articles?sort_by=topic&order_by=asc")
         .expect(200)
         .then(response => {
-          expect(response.body.articles).to.be.an("array");
-          expect(response.body.articles).to.be.sortedBy("topic", {
+          expect(response.body).to.be.an("array");
+          expect(response.body).to.be.sortedBy("topic", {
             ascending: true
           });
         });
@@ -333,7 +325,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Column does not exist");
         });
     });
-    xit('GET:400 responds with "Bad request" when trying to order by anything other than asc or desc', () => {
+    it('GET:400 responds with "Bad request" when trying to order by anything other than asc or desc', () => {
       return request(app)
         .get("/api/articles?sort_by=topic&order_by=abc")
         .expect(400)
@@ -341,7 +333,7 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Bad request");
         });
     });
-    xit('GET:404 responds with "Author does not exist" if there are no authors', () => {
+    it('GET:404 responds with "Author does not exist" if there are no authors', () => {
       return request(app)
         .get("/api/articles?author=dog")
         .expect(404)
@@ -349,19 +341,34 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Author does not exist");
         });
     });
-    xit('GET:404 responds with "Topic does not exist" if there are no topics', () => {
+    it("responds with status 200 and an empty array if an author exists but does not have any articles", () => {
       return request(app)
-        .get("/api/articles?topic=dog")
-        .expect(404)
+        .get("/api/articles?author=lurker")
+        .expect(200)
         .then(response => {
-          expect(response.body.msg).to.equal("Topic does not exist");
+          expect(response.body).to.be.an("array");
+          expect(response.body).to.have.length(0);
         });
     });
-    // it('responds with status 200 and an empty array if an author exists but does not have any articles', () => {
-    //   return request(app)
-    //   .get('/api/articles')
-    // });
   });
+  it('GET:404 responds with "Topic does not exist" if there are no topics', () => {
+    return request(app)
+      .get("/api/articles?topic=dog")
+      .expect(404)
+      .then(response => {
+        expect(response.body.msg).to.equal("Topic does not exist");
+      });
+  });
+  it("responds with status 200 and sends back an empty array if a topic exists but does not have any articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(response => {
+        expect(response.body).to.be.an("array");
+        expect(response.body).to.have.length(0);
+      });
+  });
+
   describe("PATCH /comments/:comment_id", () => {
     it("responds with status 200 and updates and increments the votes", () => {
       return request(app)
@@ -370,6 +377,9 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
+          // console.log(response.body);
+
+          //needs to be sent back an object, not an array of objects
           expect(response.body.comment[0].votes).to.equal(2);
         });
     });
@@ -380,7 +390,34 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
+          // console.log(response.body);
+
+          //needs to be sent back an object, not an array of objects
           expect(response.body.comment[0].votes).to.equal(-2);
+        });
+    });
+    it.only("PATCH:404 responds with 'Id does not exist' when it contains a valid comment_id that does not exist", () => {
+      return request(app)
+        .patch("/api/comments/99999")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Id does not exist");
+        });
+    });
+  });
+  describe.only("DELETE /comments/:comment_id", () => {
+    it("DELETE:204 deletes the given comment by comment_id", () => {
+      return request(app)
+        .delete("/api/comments/5")
+        .expect(204);
+    });
+    it("DELETE:400 responds with 'Incorrect Data-type' when it contains an invalid id ", () => {
+      return request(app)
+        .delete("/api/comments/not-an-id")
+        .expect(400)
+        .then(response => {
+          console.log(response.body.msg);
+          expect(response.body.msg).to.equal("Incorrect Data-type");
         });
     });
   });

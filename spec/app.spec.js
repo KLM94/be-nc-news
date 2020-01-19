@@ -207,6 +207,22 @@ describe("/api", () => {
           expect(response.body.msg).to.equal("Incorrect Data-type");
         });
     });
+    it("responds with status 200 and sorts limits the number of responses (defaults to 10)", () => {
+      return request(app)
+        .get("/api/articles/5/comments?limit=4")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments.length).to.be.below(5);
+        });
+    });
+    it("responds with status 200 if limit isn't specified, it defaults to 10", () => {
+      return request(app)
+        .get("/api/articles/5/comments?limit=10")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments.length).to.be.below(11);
+        });
+    });
 
     it("responds with status 200 and sorts comments by created_at", () => {
       return request(app)
@@ -255,7 +271,7 @@ describe("/api", () => {
         .get("/api/articles")
         .expect(200)
         .then(response => {
-          expect(response.body.articles.length).to.equal(12);
+          expect(response.body.articles.length).to.equal(10);
           expect(response.body.articles[0]).to.be.an("object");
           expect(response.body.articles[0]).to.have.keys(
             "author",
@@ -267,6 +283,22 @@ describe("/api", () => {
             "votes",
             "comment_count"
           );
+        });
+    });
+    it("responds with status 200 and limits the number of responses (defaults to 10)", () => {
+      return request(app)
+        .get("/api/articles?limit=6")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles.length).to.be.below(7);
+        });
+    });
+    it("responds with status 200 if limit isn't specified, it defaults to 10", () => {
+      return request(app)
+        .get("/api/articles?limit=10")
+        .expect(200)
+        .then(response => {
+          expect(response.body.articles.length).to.be.below(11);
         });
     });
     it("responds with status 200 and sorts articles by date and orders by descending by default", () => {

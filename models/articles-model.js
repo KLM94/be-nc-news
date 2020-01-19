@@ -48,8 +48,9 @@ exports.addCommentToArticle = (article_id, username, body) => {
     });
 };
 
-exports.selectCommentByArticleId = (sort_by, order, article_id) => {
+exports.selectCommentByArticleId = (sort_by, order, article_id, limit) => {
   return connection("comments")
+    .limit(limit || 10)
     .where("comments.article_id", "=", article_id)
     .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
@@ -64,10 +65,11 @@ exports.selectCommentByArticleId = (sort_by, order, article_id) => {
     });
 };
 
-exports.selectArticles = (sort_by, order, author, topic) => {
+exports.selectArticles = (sort_by, order, author, topic, limit) => {
   return connection
     .select("articles.*")
     .from("articles")
+    .limit(limit || 10)
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .count({ comment_count: "comments.article_id" })
     .groupBy("articles.article_id")

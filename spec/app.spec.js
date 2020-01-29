@@ -10,6 +10,14 @@ const connection = require("../db/connection");
 describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
+  it.only("responds with JSON, describing all endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(response => {
+        expect(response.body).to.be.an("object");
+      });
+  });
   describe("GET /topics", () => {
     it("responds with status 200 and sends all topics", () => {
       return request(app)
@@ -105,7 +113,7 @@ describe("/api", () => {
         });
     });
   });
-  describe.only("PATCH /articles/:article_id", () => {
+  describe("PATCH /articles/:article_id", () => {
     it("responds with status 200 and updates and increments the votes", () => {
       return request(app)
         .patch("/api/articles/1")
@@ -126,28 +134,7 @@ describe("/api", () => {
           expect(response.body.article.votes).to.equal(96);
         });
     });
-    it("PATCH:400 responds with 'Bad Request' when updating votes that isn't an integer", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({ votes: "Northcoders" })
-        .expect(400)
-        .then(response => {
-          expect(response.body.msg).to.equal("Bad Request");
-        });
-    });
-    it("PATCH:400 responds with 'Bad Request' when trying to add the incorrect property", () => {
-      return request(app)
-        .patch("/api/articles/1")
-        .send({ oops: 1 })
-        .expect(400)
-        .then(response => {
-          expect(response.body.msg).to.equal("Bad Request");
-        });
-    });
   });
-
-  //to.contain.keys
-  //houses.every egkdnlf === true
 
   describe("POST /articles/:article_id/comments", () => {
     it("responds with status 201 and posts a comment", () => {
@@ -390,8 +377,8 @@ describe("/api", () => {
         .get("/api/articles?author=lurker")
         .expect(200)
         .then(response => {
-          expect(response.body).to.be.an("array");
-          expect(response.body).to.have.length(0);
+          expect(response.body).to.be.an("object");
+          expect(response.body.articles).to.have.length(0);
         });
     });
   });
@@ -408,8 +395,8 @@ describe("/api", () => {
       .get("/api/articles?topic=paper")
       .expect(200)
       .then(response => {
-        expect(response.body).to.be.an("array");
-        expect(response.body).to.have.length(0);
+        expect(response.body).to.be.an("object");
+        expect(response.body.articles).to.have.length(0);
       });
   });
 

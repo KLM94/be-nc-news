@@ -25,12 +25,6 @@ exports.updateArticleById = (article_id, inc_votes) => {
     .increment("votes", inc_votes || 0)
     .returning("*")
     .then(article => {
-      if (inc_votes === undefined) {
-        return Promise.reject({
-          status: 400,
-          msg: "Bad Request"
-        });
-      }
       return { article: article[0] };
     });
 };
@@ -130,7 +124,7 @@ const selectAuthor = author => {
           msg: "Author does not exist"
         });
       }
-      return [];
+      return { articles: [] };
     });
 };
 
@@ -146,6 +140,6 @@ const selectTopic = topic => {
           msg: "Topic does not exist"
         });
       }
-      return [];
+      return { articles: [] };
     });
 };

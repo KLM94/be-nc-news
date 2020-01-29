@@ -93,7 +93,7 @@ describe("formatDates", () => {
         created_at: new Date(1416140514171)
       }
     ];
-    expect(input).to.eql(input2);
+    expect(formatDates(input).to.eql(input2));
   });
 });
 

@@ -7,7 +7,12 @@ const {
   getCommentByArticleId
 } = require("../controllers/articles-controller");
 
-articlesRouter.route("/").get(getArticles);
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .all((req, res, next) => {
+    res.status(405).send("Method Not Allowed");
+  });
 
 articlesRouter
   .route("/:article_id")

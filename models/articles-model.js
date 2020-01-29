@@ -15,14 +15,14 @@ exports.selectArticleById = article_id => {
           msg: "Article does not exist"
         });
       }
-      return { article: articles };
+      return { article: articles[0] };
     });
 };
 
 exports.updateArticleById = (article_id, inc_votes) => {
   return connection("articles")
     .where("article_id", "=", article_id)
-    .increment("votes", inc_votes)
+    .increment("votes", inc_votes || 0)
     .returning("*")
     .then(article => {
       if (inc_votes === undefined) {
@@ -31,7 +31,7 @@ exports.updateArticleById = (article_id, inc_votes) => {
           msg: "Bad Request"
         });
       }
-      return { article: article };
+      return { article: article[0] };
     });
 };
 
@@ -44,7 +44,7 @@ exports.addCommentToArticle = (article_id, username, body) => {
     })
     .returning("*")
     .then(comment => {
-      return { comment: comment };
+      return { comment: comment[0] };
     });
 };
 
@@ -55,6 +55,7 @@ exports.selectCommentByArticleId = (sort_by, order, article_id, limit) => {
     .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
+      //  console.log(comments);
       if (comments.length === 0) {
         return Promise.reject({
           status: 404,
@@ -64,6 +65,25 @@ exports.selectCommentByArticleId = (sort_by, order, article_id, limit) => {
       return { comments: comments };
     });
 };
+// const selectComment = comment => {
+//   return connection('comments.*')
+//   .from('comments')
+//   .where("comments.article_id", "=", comment)
+// }
+// const selectAuthor = author => {
+//   return connection("users.*")
+//     .from("users")
+//     .where("users.username", "=", author)
+//     .then(author => {
+//       if (author.length === 0) {
+//         return Promise.reject({
+//           status: 404,
+//           msg: "Author does not exist"
+//         });
+//       }
+//       return [];
+//     });
+// };
 
 exports.selectArticles = (sort_by, order, author, topic, limit) => {
   return connection

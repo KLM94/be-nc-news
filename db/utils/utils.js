@@ -6,6 +6,15 @@ exports.formatDates = ([...articles]) => {
   return articles;
 };
 
+// exports.formatDates = ([...articles]) => {
+//   articles.forEach(article => {
+//     const articleCopy = { ...article };
+//     articleCopy.created_at = new Date(articleCopy.created_at);
+//   });
+
+//   return articles;
+// };
+
 exports.makeRefObj = list => {
   const referenceObj = {};
 
@@ -30,20 +39,3 @@ exports.formatComments = (comments, articleRef) => {
   });
   return coppiedComments;
 };
-
-// let coppiedComments = [...comments];
-
-// coppiedComments.forEach(comment => {
-//   comment["author"] = comment["created_by"];
-//   delete comment["created_by"];
-
-//   comment["article_id"] = comment["belongs_to"];
-//   delete comment["belongs_to"];
-
-//   comment["article_id"] = articleRef[comment["article_id"]];
-
-//   comment.created_at = new Date(comment.created_at);
-// });
-
-// return coppiedComments
-// Not mutating the array but need to make sure it's not mutating the object

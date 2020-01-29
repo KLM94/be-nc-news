@@ -1,5 +1,4 @@
 const handleCustomErrors = (err, req, res, next) => {
-  // console.log(err);
   if (err.status) {
     res.status(err.status).send({ msg: err.msg });
   } else {
@@ -8,7 +7,6 @@ const handleCustomErrors = (err, req, res, next) => {
 };
 
 const handlePsqlErrors = (err, req, res, next) => {
-  // console.log(err);
   if (err.code) {
     const errorCodes = {
       "22P02": [400, "Incorrect Data-type"],
@@ -21,7 +19,6 @@ const handlePsqlErrors = (err, req, res, next) => {
 };
 
 const handleServerErrors = (err, req, res, next) => {
-  //console.log(err);
   if (err.status) {
     res.status(500).send({ msg: "Internal Server Error" });
   }

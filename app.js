@@ -12,8 +12,7 @@ app.use(express.json());
 app.use("/api", apiRouter);
 
 app.all("/*", (err, req, res, next) => {
-  //console.log(err);
-  res.status(500).send({ msg: "Internal server error" });
+  res.status(404).send({ msg: "Internal server error" });
 });
 
 app.use(handleCustomErrors);

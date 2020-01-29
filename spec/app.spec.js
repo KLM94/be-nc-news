@@ -76,18 +76,16 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.article).to.eql([
-            {
-              article_id: 1,
-              title: "Living in the shadow of a great man",
-              body: "I find this existence challenging",
-              votes: 100,
-              topic: "mitch",
-              author: "butter_bridge",
-              created_at: "2018-11-15T12:21:54.171Z",
-              comment_count: "13"
-            }
-          ]);
+          expect(response.body.article).to.eql({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            body: "I find this existence challenging",
+            votes: 100,
+            topic: "mitch",
+            author: "butter_bridge",
+            created_at: "2018-11-15T12:21:54.171Z",
+            comment_count: "13"
+          });
         });
     });
     it("GET:404 responds with 'Article does not exist' when given an id that doesn't exist", () => {
@@ -107,7 +105,7 @@ describe("/api", () => {
         });
     });
   });
-  describe("PATCH /articles/:article_id", () => {
+  describe.only("PATCH /articles/:article_id", () => {
     it("responds with status 200 and updates and increments the votes", () => {
       return request(app)
         .patch("/api/articles/1")
@@ -115,7 +113,7 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.article[0].votes).to.equal(104);
+          expect(response.body.article.votes).to.equal(104);
         });
     });
     it("responds with status 200 and updates and decrements the votes", () => {
@@ -125,7 +123,7 @@ describe("/api", () => {
         .expect(200)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.article[0].votes).to.equal(96);
+          expect(response.body.article.votes).to.equal(96);
         });
     });
     it("PATCH:400 responds with 'Bad Request' when updating votes that isn't an integer", () => {
@@ -159,14 +157,14 @@ describe("/api", () => {
         .expect(201)
         .then(response => {
           expect(response.body).to.be.an("object");
-          expect(response.body.comment[0]).to.have.keys([
+          expect(response.body.comment).to.have.keys(
             "comment_id",
             "author",
             "article_id",
             "votes",
             "created_at",
             "body"
-          ]);
+          );
         });
     });
     it("POST:400 responds with 'Missing required field' when there is no information entered", () => {
@@ -189,6 +187,15 @@ describe("/api", () => {
           response.body.comments.forEach(comment => {
             expect(comment.article_id).to.equal(5);
           });
+        });
+    });
+    xit("responds with status 200 and sends back an empty array when the article exists but has no comments", () => {
+      return request(app)
+        .get("/api/articles/2/comments")
+        .expect(200)
+        .then(response => {
+          expect(response.body.comments).to.be.an("array");
+          expect(response.body.comments).to.have.length(0);
         });
     });
     it("GET:404 responds with 'Id does not exist' when an article Id does not exist", () => {
@@ -235,6 +242,17 @@ describe("/api", () => {
           });
         });
     });
+    // it("GET:404 responds with status 200 and sorts comments by created_at", () => {
+    //   return request(app)
+    //     .get("/api/articles/2/comments")
+    //     .expect(200)
+    //     .then(response => {
+    //       expect(response.body.comments).to.be.an("array");
+    //       expect(response.body.comments).to.be.sortedBy("created_at", {
+    //         descending: true
+    //       });
+    //     });
+    // });
     it("responds with status 200 and sorts comments by the specified query", () => {
       return request(app)
         .get("/api/articles/5/comments?sort_by=votes&order=asc")
@@ -402,7 +420,6 @@ describe("/api", () => {
         .send({ inc_votes: 2 })
         .expect(200)
         .then(response => {
-          // console.log(response.body);
           expect(response.body).to.be.an("object");
           expect(response.body.comment.votes).to.equal(2);
         });
@@ -438,6 +455,14 @@ describe("/api", () => {
         .expect(400)
         .then(response => {
           expect(response.body.msg).to.equal("Incorrect Data-type");
+        });
+    });
+    it("DELETE:404 responds with 'Not found' when it contains a valid comment_id that does not exist ", () => {
+      return request(app)
+        .delete("/api/comments/1000")
+        .expect(404)
+        .then(response => {
+          expect(response.body.msg).to.equal("Not found");
         });
     });
   });

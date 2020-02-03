@@ -10,12 +10,12 @@ const connection = require("../db/connection");
 describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
-  it.only("responds with JSON, describing all endpoints", () => {
+  it("responds with JSON, describing all endpoints", () => {
     return request(app)
       .get("/api")
       .expect(200)
       .then(response => {
-        expect(response.body).to.be.an("object");
+        expect(response.body).to.be.an("object"); // Add additional spec(s) to check for keys in JSON.
       });
   });
   describe("GET /topics", () => {
@@ -164,7 +164,7 @@ describe("/api", () => {
         });
     });
   });
-  describe("GET: /articles/:article_id/comments", () => {
+  describe.only("GET: /articles/:article_id/comments", () => {
     it("responds with status 200 and sends back an array of comments for a given article ID", () => {
       return request(app)
         .get("/api/articles/5/comments")
@@ -176,7 +176,7 @@ describe("/api", () => {
           });
         });
     });
-    xit("responds with status 200 and sends back an empty array when the article exists but has no comments", () => {
+    it("responds with status 200 and sends back an empty array when the article exists but has no comments", () => {
       return request(app)
         .get("/api/articles/2/comments")
         .expect(200)
@@ -190,7 +190,7 @@ describe("/api", () => {
         .get("/api/articles/9999/comments")
         .expect(404)
         .then(response => {
-          expect(response.body.msg).to.equal("Id does not exist");
+          expect(response.body.msg).to.equal("Article does not exist");
         });
     });
     it("GET:400 responds with 'Incorrect Data-type' when given an invalid id'", () => {

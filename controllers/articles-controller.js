@@ -40,8 +40,9 @@ exports.getCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { sort_by, order, limit } = req.query;
   selectCommentByArticleId(sort_by, order, article_id, limit)
-    .then(comment => {
-      res.status(200).send(comment);
+    .then(comments => {
+      // console.log(comments);
+      res.status(200).send(comments);
     })
     .catch(next);
 };

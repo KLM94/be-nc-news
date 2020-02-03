@@ -46,38 +46,41 @@ exports.selectCommentByArticleId = (sort_by, order, article_id, limit) => {
   return connection("comments")
     .limit(limit || 10)
     .where("comments.article_id", "=", article_id)
-    .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
-      //  console.log(comments);
+      // console.log(comments);
       if (comments.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: "Id does not exist"
-        });
+        return checkIfArticleExists(article_id);
       }
       return { comments: comments };
     });
 };
-// const selectComment = comment => {
-//   return connection('comments.*')
-//   .from('comments')
-//   .where("comments.article_id", "=", comment)
-// }
-// const selectAuthor = author => {
-//   return connection("users.*")
-//     .from("users")
-//     .where("users.username", "=", author)
-//     .then(author => {
-//       if (author.length === 0) {
-//         return Promise.reject({
-//           status: 404,
-//           msg: "Author does not exist"
-//         });
+
+// const articleDoesntExist = article_id => {
+//   return connection("articles.*")
+//     .from("articles")
+//     .where("article_id", "=", article_id)
+//     .then(article => {
+//       if (article.length === 0) {
+//         return true;
 //       }
-//       return [];
+//       return false;
 //     });
 // };
+
+const checkIfArticleExists = article_id => {
+  return connection("articles.*")
+    .from("articles")
+    .where("article_id", "=", article_id)
+    .then(article => {
+      if (article.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "Article does not exist"
+        });
+      }
+    });
+};
 
 exports.selectArticles = (sort_by, order, author, topic, limit) => {
   return connection

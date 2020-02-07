@@ -42,9 +42,8 @@ exports.addCommentToArticle = (article_id, username, body) => {
     });
 };
 
-exports.selectCommentByArticleId = (sort_by, order, article_id, limit) => {
+exports.selectCommentByArticleId = (sort_by, order, article_id) => {
   return connection("comments")
-    .limit(limit || 10)
     .where("comments.article_id", "=", article_id)
     .orderBy(sort_by || "created_at", order || "desc")
     .then(comments => {
@@ -82,11 +81,10 @@ const checkIfArticleExists = article_id => {
     });
 };
 
-exports.selectArticles = (sort_by, order, author, topic, limit) => {
+exports.selectArticles = (sort_by, order, author, topic) => {
   return connection
     .select("articles.*")
     .from("articles")
-    .limit(limit || 10)
     .leftJoin("comments", "articles.article_id", "comments.article_id")
     .count({ comment_count: "comments.article_id" })
     .groupBy("articles.article_id")

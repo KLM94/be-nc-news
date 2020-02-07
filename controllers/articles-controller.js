@@ -38,8 +38,8 @@ exports.postCommentToArticle = (req, res, next) => {
 
 exports.getCommentByArticleId = (req, res, next) => {
   const { article_id } = req.params;
-  const { sort_by, order, limit } = req.query;
-  selectCommentByArticleId(sort_by, order, article_id, limit)
+  const { sort_by, order } = req.query;
+  selectCommentByArticleId(sort_by, order, article_id)
     .then(comments => {
       // console.log(comments);
       res.status(200).send(comments);
@@ -48,8 +48,8 @@ exports.getCommentByArticleId = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, author, topic, limit } = req.query;
-  selectArticles(sort_by, order, author, topic, limit)
+  const { sort_by, order, author, topic } = req.query;
+  selectArticles(sort_by, order, author, topic)
     .then(articles => {
       res.status(200).send(articles);
     })

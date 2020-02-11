@@ -38,4 +38,11 @@ npm run setup-dbs
 ```bash
 npm run seed
 ```
+## Running the tests:
+
+Run the following command to run tests on the database that checks functionality of all endpoints and written specs.
+
+```bash
+npm run test
+```
 

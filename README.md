@@ -4,6 +4,8 @@
 
 NC News is a Back-end project which is used for the Front-end web application. The web application displays articles, topics and comments hosted from the Back-end built API.
 
+This project uses JavaScript, Express, Mocha, Chai, PSQL, Node.
+
 ## Installation setup:
 
 ```bash

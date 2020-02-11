@@ -6,11 +6,19 @@ NC News is a Back-end project which is used for the Front-end web application. T
 
 This project uses JavaScript, Express, Mocha, Chai, PSQL, Node.
 
-## Installation setup:
- **Clone the repository:**
+## Prerequisites:
 
+*Click each name to download!*
+[GitHub](http://github.com)
+[NodeJS](https://nodejs.org/en/)
+[PSQL](postgresql.org/download/)
+
+## Installing:
+
+ Clone the repository
 ```bash
 git clone https://github.com/KLM94/be-nc-news.git
-
+cd into the directory
+```bash
 cd be-nc-news
 

@@ -13,15 +13,10 @@ This project uses JavaScript, Express, Mocha, Chai, PSQL, Node.
 git clone https://github.com/KLM94/be-nc-news.git
 
 cd be-nc-news
-```
-** Dependancies **
 
 `` npm i ``
-
-** Database **
-
-`` npm run set-dbs
-   npm run seed ``
+`` npm run set-dbs ``
+ ``  npm run seed ``
 
 ## Step 2 - Setting up your project
 

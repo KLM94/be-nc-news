@@ -64,5 +64,5 @@ npm run test
 
 **GET /api**
 
-##Authors:
+## Authors:
 Kirsty McGlynn.

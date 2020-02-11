@@ -63,3 +63,6 @@ npm run test
 **DELETE** /api/comments/:comment_id
 
 **GET /api**
+
+##Authors:
+Kirsty McGlynn.

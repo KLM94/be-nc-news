@@ -4,7 +4,7 @@
 
 NC News is a Back-end project which is used for the Front-end web application. The web application displays articles, topics and comments hosted from the Back-end built API.
 
-## Clone this repo:
+## Installation setup:
 
 ```bash
 git clone https://github.com/KLM94/be-nc-news.git

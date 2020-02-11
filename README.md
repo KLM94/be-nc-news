@@ -40,9 +40,26 @@ npm run seed
 ```
 ## Running the tests:
 
-Run the following command to run tests on the database that checks functionality of all endpoints and written specs.
+Run the following command to run tests on the database that checks functionality of all endpoints and written specs:
 
 ```bash
 npm run test
 ```
+## Endpoints:
 
+**GET** /api/topics
+
+**GET** /api/users/:username
+
+**GET** /api/articles/:article_id
+**PATCH** /api/articles/:article_id
+
+**POST** /api/articles/:article_id/comments
+**GET** /api/articles/:article_id/comments
+
+**GET** /api/articles
+
+**PATCH** /api/comments/:comment_id
+**DELETE** /api/comments/:comment_id
+
+**GET /api**

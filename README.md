@@ -27,7 +27,8 @@ cd into the directory
 ```bash
 cd be-nc-news
 ```
-Open directory in VS code and install dependancies
+Open directory in VS code and install dependancies.
+*To see dependancies, see scripts in package-json.*
 ```bash
 npm install -g
 ```

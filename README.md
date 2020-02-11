@@ -15,6 +15,8 @@ This project uses JavaScript, Express, Mocha, Chai, PSQL, Node.
 
 [PSQL](postgresql.org/download/)
 
+[VSCode](https://code.visualstudio.com/)
+
 ## Installing:
 
  Clone the repository
@@ -24,5 +26,9 @@ git clone https://github.com/KLM94/be-nc-news.git
 cd into the directory
 ```bash
 cd be-nc-news
+```
+open directory in VS code and install dependancies
+```bash
+npm install -g
 ```
 

@@ -1,38 +1,15 @@
-# Northcoders News API
-
-**You can clone this repository but do not fork it**
+# Northcoders NC News API
 
 ## Background
 
-We will be building the API to use in the Northcoders News Sprint during the Front End block of the course.
+NC News is a Back-end project which is used for the Front-end web application. The web application displays articles, topics and comments hosted from the Back-end built API.
 
-Your database will be PSQL, and you will interact with it using [Knex](https://knexjs.org).
-
-## Step 1 - Setting up your own repository
-
-Clone this repo:
+## Clone this repo:
 
 ```bash
-git clone https://github.com/northcoders/be-nc-news
+git clone https://github.com/KLM94/be-nc-news.git
 
 cd be-nc-news
-```
-
-On GitHub create your own **public** repository for your project. **Make sure NOT to initialise it with a README or .gitignore.**
-
-Next, you should hook your local version up to the newly created GitHub repo. Use the following terminal commands, making sure to check the git remotes with each step (`git remote -v`):
-
-```bash
-git remote remove origin
-
-# This will prevent you from pushing to the original Northcoders' repo.
-```
-
-```bash
-git remote add origin <YOUR-GITHUB-URL>
-
-# This will add your GitHub location to your local git repository.
-# You can confirm this by checking the new git remote.
 ```
 
 ## Step 2 - Setting up your project

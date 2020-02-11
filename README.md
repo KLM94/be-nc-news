@@ -31,4 +31,10 @@ Open directory in VS code and install dependancies
 ```bash
 npm install -g
 ```
+Re-seed and run the database
+```bash
+npm run setup-dbs
+
+npm run seed
+```
 

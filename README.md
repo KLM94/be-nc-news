@@ -34,7 +34,8 @@ npm install -g
 Re-seed and run the database
 ```bash
 npm run setup-dbs
-
+```
+```bash
 npm run seed
 ```
 

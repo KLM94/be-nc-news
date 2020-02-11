@@ -14,9 +14,9 @@ git clone https://github.com/KLM94/be-nc-news.git
 
 cd be-nc-news
 
-`` npm i ``
-`` npm run set-dbs ``
- ``  npm run seed ``
+` npm i `
+` npm run set-dbs `
+ `  npm run seed `
 
 ## Step 2 - Setting up your project
 

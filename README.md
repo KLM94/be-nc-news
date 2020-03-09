@@ -6,6 +6,15 @@ NC News is a Back-end project which is used for the Front-end web application. T
 
 This project uses JavaScript, Express, Mocha, Chai, PSQL, Node.
 
+## Links
+
+Front-end repo: https://github.com/KLM94/FE-NC-NEWS2.git
+
+Hosted version of the front-end: https://klm-nc-news.netlify.com
+
+Hosted version of the back-end: https://kirstys-nc-news.herokuapp.com/api
+
+
 ## Prerequisites:
 
 
